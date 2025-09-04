@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Watchzone</name>
+    </assembly>
+    <members>
+        <member name="T:Watchzone.ViewModels.CategoryProductsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.Products">
+            <inheritdoc cref="F:Watchzone.ViewModels.CategoryProductsViewModel.products"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.IsLoading">
+            <inheritdoc cref="F:Watchzone.ViewModels.CategoryProductsViewModel.isLoading"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.HasError">
+            <inheritdoc cref="F:Watchzone.ViewModels.CategoryProductsViewModel.hasError"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.ErrorMessage">
+            <inheritdoc cref="F:Watchzone.ViewModels.CategoryProductsViewModel.errorMessage"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.Title">
+            <inheritdoc cref="F:Watchzone.ViewModels.CategoryProductsViewModel.title"/>
+        </member>
+        <member name="F:Watchzone.ViewModels.CategoryProductsViewModel.refreshCommand">
+            <summary>The backing field for <see cref="P:Watchzone.ViewModels.CategoryProductsViewModel.RefreshCommand"/>.</summary>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.RefreshCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:Watchzone.ViewModels.CategoryProductsViewModel.Refresh"/>.</summary>
+        </member>
+        <member name="F:Watchzone.ViewModels.CategoryProductsViewModel.addToCartCommand">
+            <summary>The backing field for <see cref="P:Watchzone.ViewModels.CategoryProductsViewModel.AddToCartCommand"/>.</summary>
+        </member>
+        <member name="P:Watchzone.ViewModels.CategoryProductsViewModel.AddToCartCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:Watchzone.ViewModels.CategoryProductsViewModel.AddToCart(Watchzone.Models.Product)"/>.</summary>
+        </member>
+        <member name="T:Watchzone.ViewModels.MainViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.WelcomeMessage">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.welcomeMessage"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.IsRefreshing">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.isRefreshing"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.Products">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.products"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.Categories">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.categories"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.IsLoading">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.isLoading"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.HasError">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.hasError"/>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.ErrorMessage">
+            <inheritdoc cref="F:Watchzone.ViewModels.MainViewModel.errorMessage"/>
+        </member>
+        <member name="F:Watchzone.ViewModels.MainViewModel.loadProductsCommand">
+            <summary>The backing field for <see cref="P:Watchzone.ViewModels.MainViewModel.LoadProductsCommand"/>.</summary>
+        </member>
+        <member name="P:Watchzone.ViewModels.MainViewModel.LoadProductsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:Watchzone.ViewModels.MainViewModel.LoadProducts"/>.</summary>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Products">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Products" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsLoading">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsLoading" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ErrorMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ErrorMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Title">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Title" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.WelcomeMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "WelcomeMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsRefreshing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsRefreshing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Categories">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Categories" generated properties.</summary>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Products">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Products" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsLoading">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsLoading" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ErrorMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ErrorMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Title">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Title" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.WelcomeMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "WelcomeMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsRefreshing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsRefreshing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Categories">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Categories" generated properties.</summary>
+        </member>
+    </members>
+</doc>

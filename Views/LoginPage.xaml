@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Watchzone.Views.LoginPage"
+             Title="Login"
+             BackgroundColor="{StaticResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="30,20" Spacing="0">
+            <!-- Header Section -->
+            <StackLayout HorizontalOptions="Center" Margin="0,0,0,30">
+                <Image Source="woocommerce_logo.png" 
+                       HeightRequest="60" 
+                       HorizontalOptions="Center" 
+                       Margin="0,0,0,10"/>
+                <Label Style="{StaticResource LoginHeaderLabel}"/>
+                <Label Style="{StaticResource LoginSubHeaderLabel}"/>
+            </StackLayout>
+
+
+            <!-- Divider -->
+            <StackLayout Style="{StaticResource DividerLayout}">
+                <BoxView Style="{StaticResource DividerLine}"/>
+                <Label Style="{StaticResource DividerText}"/>
+                <BoxView Style="{StaticResource DividerLine}"/>
+            </StackLayout>
+
+            <!-- Form Section -->
+            <Frame x:Name="LoginFrame" Style="{StaticResource CardLayout}">
+                <StackLayout>
+                    <!-- Username/Email -->
+                    <Label Text="Username or Email" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="UsernameEntry" 
+                           Placeholder="Enter your username or email"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"
+                           ReturnType="Next"
+                           ReturnCommandParameter="{x:Reference PasswordEntry}"/>
+                    <Label x:Name="UsernameError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Password -->
+                    <Label Text="Password" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="PasswordEntry" 
+                           Placeholder="Enter your password" 
+                           IsPassword="True"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"
+                           ReturnType="Go"
+                           ReturnCommand="{Binding Source={x:Reference LoginButton}, Path=Command}"/>
+                    <Label x:Name="PasswordError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
+                        <StackLayout Orientation="Horizontal" Grid.Column="0">
+                            <CheckBox x:Name="RememberMeCheckBox" 
+                                      Color="{StaticResource PrimaryColor}"
+                                      VerticalOptions="Center"/>
+                            <Label Text="Remember me" 
+                                   TextColor="{StaticResource TextColor}"
+                                   FontSize="12"
+                                   VerticalOptions="Center"
+                                   Margin="10,0,0,0"/>
+                        </StackLayout>
+
+                        <Label Grid.Column="1" 
+                               Text="Forgot Password?" 
+                               Style="{StaticResource ForgotPasswordLabel}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnForgotPasswordTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+
+                    <!-- Login Button -->
+                    <Button x:Name="LoginButton" 
+                            Text="SIGN IN" 
+                            Style="{StaticResource PrimaryButton}"
+                            Clicked="OnLoginClicked"
+                            IsEnabled="False"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Sign up link -->
+            <StackLayout Orientation="Horizontal" 
+                         HorizontalOptions="Center" 
+                         Margin="0,20,0,0">
+                <Label Text="Don't have an account?" 
+                       TextColor="{StaticResource SecondaryTextColor}"/>
+                <Label Text=" Sign Up" 
+                       Style="{StaticResource LinkLabel}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSignUpTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

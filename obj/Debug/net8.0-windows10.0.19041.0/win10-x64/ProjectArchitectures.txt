@@ -1,0 +1,1 @@
+C:\Users\Admin\source\repos\Watchzone\Watchzone\Watchzone.csproj;x64

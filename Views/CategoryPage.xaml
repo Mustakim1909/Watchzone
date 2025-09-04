@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Watchzone.ViewModels"
+             x:Class="Watchzone.Views.CategoryPage">
+    
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                 Command="{Binding LoadCategoriesCommand}">
+
+        <CollectionView ItemsSource="{Binding Categories}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="10"
+                   HasShadow="True"
+                   CornerRadius="15"
+                   BorderColor="#e0e0e0"
+                   BackgroundColor="White">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" />
+                        </Frame.GestureRecognizers>
+
+                        <VerticalStackLayout>
+                            <Image Source="{Binding ImageUrl.LocalImage}" HeightRequest="120"/>
+                            <Label Text="{Binding Name}" 
+                           FontAttributes="Bold" 
+                           HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </RefreshView>
+</ContentPage>

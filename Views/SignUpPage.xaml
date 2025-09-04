@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Watchzone.Views.SignUpPage"
+             Title="Create Account"
+             BackgroundColor="{StaticResource PageBackgroundColor}">
+
+
+    <ScrollView>
+        <StackLayout Padding="30,20" Spacing="0">
+            <!-- Header Section -->
+            <StackLayout HorizontalOptions="Center" Margin="0,0,0,30">
+                <Image Source="woocommerce_logo.png" 
+                       HeightRequest="60" 
+                       HorizontalOptions="Center" 
+                       Margin="0,0,0,10"/>
+                <Label Text="Create Your Account" 
+                       Style="{StaticResource HeaderLabel}"/>
+                <Label Text="Join our WooCommerce store" 
+                       Style="{StaticResource SubHeaderLabel}"/>
+            </StackLayout>
+
+            <!-- Form Section -->
+            <Frame Style="{StaticResource CardLayout}">
+                <StackLayout>
+                    <!-- First Name and Last Name in a horizontal layout -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <StackLayout Grid.Column="0">
+                            <Label Text="First Name" Style="{StaticResource FormLabel}"/>
+                            <Entry x:Name="FirstNameEntry" 
+                                   Placeholder="Enter first name"
+                                   Style="{StaticResource FormEntry}"
+                                   TextChanged="OnEntryTextChanged"/>
+                            <Label x:Name="FirstNameError" 
+                                   Style="{StaticResource ErrorLabel}"/>
+                        </StackLayout>
+                        <StackLayout Grid.Column="1">
+                            <Label Text="Last Name" Style="{StaticResource FormLabel}"/>
+                            <Entry x:Name="LastNameEntry" 
+                                   Placeholder="Enter last name"
+                                   Style="{StaticResource FormEntry}"
+                                   TextChanged="OnEntryTextChanged"/>
+                            <Label x:Name="LastNameError" 
+                                   Style="{StaticResource ErrorLabel}"/>
+                        </StackLayout>
+                    </Grid>
+
+                    <!-- Email -->
+                    <Label Text="Email Address" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="EmailEntry" 
+                           Placeholder="your.email@example.com" 
+                           Keyboard="Email"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"/>
+                    <Label x:Name="EmailError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Username -->
+                    <Label Text="Username" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="UsernameEntry" 
+                           Placeholder="Choose a username"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"/>
+                    <Label x:Name="UsernameError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Password -->
+                    <Label Text="Password" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="PasswordEntry" 
+                           Placeholder="Create a strong password" 
+                           IsPassword="True"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"/>
+                    <Label x:Name="PasswordError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Confirm Password -->
+                    <Label Text="Confirm Password" Style="{StaticResource FormLabel}"/>
+                    <Entry x:Name="ConfirmPasswordEntry" 
+                           Placeholder="Re-enter your password" 
+                           IsPassword="True"
+                           Style="{StaticResource FormEntry}"
+                           TextChanged="OnEntryTextChanged"/>
+                    <Label x:Name="ConfirmPasswordError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Terms and Conditions -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,15,0,0">
+                        <CheckBox x:Name="TermsCheckBox" 
+                                  Grid.Column="0" 
+                                  VerticalOptions="Center"
+                                  Color="{StaticResource PrimaryColor}"
+                                  CheckedChanged="OnTermsCheckedChanged"/>
+                        <Label Grid.Column="1" 
+                             Margin="10,0,0,0" 
+                                    VerticalOptions="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="I agree to the " />
+                                    <Span Text="Terms and Conditions" 
+                                         Style="{StaticResource LinkLabel}">
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnTermsTapped" />
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                    </Grid>
+                    <Label x:Name="TermsError" 
+                           Style="{StaticResource ErrorLabel}"/>
+
+                    <!-- Sign Up Button -->
+                    <Button x:Name="SignUpButton" 
+                            Text="CREATE ACCOUNT" 
+                            Style="{StaticResource PrimaryButton}"
+                            Clicked="OnSignUpClicked"
+                            IsEnabled="False"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Already have an account -->
+            <StackLayout Orientation="Horizontal" 
+                         HorizontalOptions="Center" 
+                         Margin="0,20,0,0">
+                <Label Text="Already have an account?" 
+                       TextColor="{StaticResource SecondaryTextColor}"/>
+                <Label Text=" Sign In" 
+                       Style="{StaticResource LinkLabel}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSignInTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
