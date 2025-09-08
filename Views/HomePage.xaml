@@ -5,10 +5,7 @@
              Shell.TabBarIsVisible="True"
              BackgroundColor="{AppThemeBinding Light=#F5F5F7, Dark=#1C1C1E}">
 
-    <ContentPage.BindingContext>
-        <vm:MainViewModel />
-    </ContentPage.BindingContext>
-
+   
     <Grid RowDefinitions="*,Auto" ColumnDefinitions="*">
 
         <!-- Full Scrollable Page -->
@@ -92,6 +89,9 @@
                    HeightRequest="120"
                    WidthRequest="100"
                    Margin="5">
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnCategoryTapped" />
+                                            </Frame.GestureRecognizers>
 
                                             <VerticalStackLayout HorizontalOptions="Center"
                                      VerticalOptions="Center">
@@ -137,6 +137,10 @@
                CornerRadius="15"
                HasShadow="True"
                Margin="0">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnProductTapped" 
+                                      CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
                                 <Grid RowDefinitions="150,Auto,Auto,Auto">
                                     <Image Source="{Binding Images[0].Src, TargetNullValue='placeholder'}"
                        Aspect="AspectFill"
@@ -148,15 +152,38 @@
                        LineBreakMode="TailTruncation"
                        MaxLines="1"
                        TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
-                                    <Label Text="{Binding Price, StringFormat='₹{0}'}"
-                       Grid.Row="2"
+                                    <!-- Price Section: Regular + Sale Price -->
+                                    <HorizontalStackLayout Grid.Row="2"
                        Margin="10,0,10,0"
-                       FontAttributes="Bold"
-                       TextColor="#FF5E00" />
+                       Spacing="8"
+                       VerticalOptions="Center">
+
+                                        <!-- Regular Price (Strikethrough) -->
+                                        <Label Text="{Binding RegularPrice, StringFormat='₹{0}'}"
+           FontSize="14"
+           TextColor="Gray"
+           TextDecorations="Strikethrough"
+           IsVisible="{Binding OnSale}" />
+
+                                        <!-- Sale Price -->
+                                        <Label Text="{Binding SalePrice, StringFormat='₹{0}'}"
+           FontSize="16"
+           FontAttributes="Bold"
+           TextColor="Red"
+           IsVisible="{Binding OnSale}" />
+
+                                        <!-- Normal Price (if not on sale) -->
+                                        <Label Text="{Binding Price, StringFormat='₹{0}'}"
+           FontSize="16"
+           FontAttributes="Bold"
+           TextColor="Green"
+           IsVisible="{Binding OnSale, Converter={StaticResource InverseBooleanConverter}}" />
+                                    </HorizontalStackLayout>
+
                                     <Button Text="Add to Cart"
         Grid.Row="3"
         Margin="10,5,10,10"
-        BackgroundColor="#FF5E00"
+        BackgroundColor="Orange"
         TextColor="White"
         CornerRadius="10"
         HorizontalOptions="Center"

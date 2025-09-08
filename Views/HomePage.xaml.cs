@@ -1,14 +1,18 @@
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Watchzone.Models;
+using Watchzone.Services;
 using Watchzone.ViewModels;
 
 namespace Watchzone.Views;
 
 public partial class HomePage : ContentPage
 {
-    public HomePage()
+    private WoocommerceServices _woocommerceServices;
+    public HomePage(WoocommerceServices woocommerceServices)
     {
         InitializeComponent();
-        BindingContext = new MainViewModel();
+        _woocommerceServices = woocommerceServices;
+        BindingContext = new MainViewModel(_woocommerceServices);
 
         // Hide navigation bar
         NavigationPage.SetHasNavigationBar(this, false);
@@ -50,7 +54,7 @@ public partial class HomePage : ContentPage
     private async void OnCategoriesClicked(object sender, EventArgs e)
     {
         var vm = BindingContext as MainViewModel;
-        await Navigation.PushAsync(new CategoryPage(vm));
+        await Navigation.PushAsync(new CategoryPage(_woocommerceServices));
     }
 
     private async void OnOrdersClicked(object sender, EventArgs e)
@@ -62,10 +66,29 @@ public partial class HomePage : ContentPage
     {
         await DisplayAlert("Profile", "Profile page would open here", "OK");
     }
-        private async void OnCategoryClicked(object sender, EventArgs e)
+     
+    private async void OnCategoryTapped(object sender, EventArgs e)
     {
-        // Navigate to Categories tab/page
-        await DisplayAlert("Categories", "Categories page would open here", "OK");
+        if ((sender as Frame)?.BindingContext is Category selectedCategory)
+        {
+            if (!selectedCategory.IsMore)
+            {
+                var page = new CategoryProductPage(_woocommerceServices, selectedCategory.Id, selectedCategory.Name);
+                await Navigation.PushAsync(page);
+            }
+            else
+            {
+                await Shell.Current.GoToAsync("//CategoryPage");
+            }
+        }
+    }
+    private async void OnProductTapped(object sender, EventArgs e)
+    {
+        if (sender is Frame frame && frame.BindingContext is Product product)
+        {
+            // Navigate to product detail page with product ID
+            await Navigation.PushAsync(new ProductDetailPage(product.Id, _woocommerceServices));
+        }
     }
 }
 

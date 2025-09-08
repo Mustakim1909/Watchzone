@@ -1,13 +1,17 @@
+using Watchzone.Interfaces;
 using Watchzone.Services;
 
 namespace Watchzone.Views;
 
 public partial class LoginPage : ContentPage
 {
-	public LoginPage()
+    private IWoocommerceServices _woocommerceServices;
+
+    public LoginPage(IWoocommerceServices woocommerceServices)
 	{
 		InitializeComponent();
         LoadSavedCredentials();
+        _woocommerceServices = woocommerceServices;
     }
 
         private void LoadSavedCredentials()
@@ -93,7 +97,7 @@ public partial class LoginPage : ContentPage
             }
 
             // Call WooCommerce authentication service
-            bool isAuthenticated = await WoocommerceServices.AuthenticateUser(
+            bool isAuthenticated = await _woocommerceServices.AuthenticateUser(
                 UsernameEntry.Text.Trim(),
                 PasswordEntry.Text
             );
@@ -120,7 +124,7 @@ public partial class LoginPage : ContentPage
             // Reset button state
             LoginButton.IsEnabled = true;
             LoginButton.Text = "SIGN IN";
-        }
+            }
     }
 
     private async Task AnimateWrongCredentials()
@@ -143,7 +147,7 @@ public partial class LoginPage : ContentPage
 
         if (!string.IsNullOrWhiteSpace(email))
         {
-            bool success = await WoocommerceServices.ResetPassword(email);
+            bool success = await _woocommerceServices.ResetPassword(email);
             if (success)
             {
                 await DisplayAlert("Success", "Password reset instructions have been sent to your email.", "OK");
@@ -158,6 +162,6 @@ public partial class LoginPage : ContentPage
     private async void OnSignUpTapped(object sender, EventArgs e)
     {
         // Navigate to sign up page
-        await Navigation.PushAsync(new SignUpPage());
+        await Navigation.PushAsync(new SignUpPage(_woocommerceServices));
     }
 }

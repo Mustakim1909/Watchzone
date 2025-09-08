@@ -54,4 +54,24 @@ namespace Watchzone.Models
         [JsonProperty("alt")]
         public string Alt { get; set; }
     }
+    public class Review
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("date_created")]
+        public DateTime DateCreated { get; set; }
+
+        [JsonProperty("review")]
+        public string ReviewText { get; set; }
+
+        [JsonProperty("rating")]
+        public int Rating { get; set; }
+
+        [JsonProperty("reviewer")]
+        public string Reviewer { get; set; }
+
+        // Helper property for display
+        public string Date => DateCreated.ToString("MMMM dd, yyyy");
+    }
 }

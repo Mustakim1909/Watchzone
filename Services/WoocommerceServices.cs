@@ -1,33 +1,40 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using Watchzone.Interfaces;
 using Watchzone.Models;
-using static System.Net.WebRequestMethods;
 
 namespace Watchzone.Services
 {
-    public class WoocommerceServices
+    public class WoocommerceServices : IWoocommerceServices
     {
-        private static readonly string WooCommerceBaseUrl = "https://thewatchzone.in/wp-json/wc/v3/";
-        private static readonly string ConsumerKey = "ck_a459b3278e2f97fb4b71c16fed4383684a099872";
-        private static readonly string ConsumerSecret = "cs_a06975fea66f45e79b166e15a098dde06373aa53";
-        private static readonly string JwtAuthUrl = "https://thewatchzone.in/wp-json/jwt-auth/v1/token";
+        private readonly AppSettings _appSettings;
+        //private  readonly string WooCommerceBaseUrl = "https://thewatchzone.in/wp-json/wc/v3/";
+        //private  readonly string ConsumerKey = "ck_a459b3278e2f97fb4b71c16fed4383684a099872";
+        //private  readonly string ConsumerSecret = "cs_a06975fea66f45e79b166e15a098dde06373aa53";
+        //private  readonly string JwtAuthUrl = "https://thewatchzone.in/wp-json/jwt-auth/v1/token";
         private readonly HttpClient _httpClient = new HttpClient();
 
-        public static async Task<bool> RegisterCustomer(object customerData)
+        public WoocommerceServices(IOptions<AppSettings> appsettings) 
+        { 
+            _appSettings =appsettings.Value;
+        }
+        public async Task<bool> RegisterCustomer(object customerData)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
                     // WooCommerce API authentication
-                    var authBytes = Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}");
+                    var authBytes = Encoding.UTF8.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}");
                     client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
                             Convert.ToBase64String(authBytes));
@@ -37,7 +44,7 @@ namespace Watchzone.Services
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                     // Send POST request to create customer
-                    var response = await client.PostAsync($"{WooCommerceBaseUrl}customers", content);
+                    var response = await client.PostAsync($"{_appSettings.BaseUrl}wp-json/wc/v3/customers", content);
 
                     return response.IsSuccessStatusCode;
                 }
@@ -49,7 +56,7 @@ namespace Watchzone.Services
                 return false;
             }
         }
-        public static async Task<bool> AuthenticateUser(string username, string password)
+        public  async Task<bool> AuthenticateUser(string username, string password)
         {
             try
             {
@@ -85,7 +92,7 @@ namespace Watchzone.Services
             }
         }
 
-        private static async Task<bool> ValidateWithJwtAuth(string username, string password)
+        public async Task<bool> ValidateWithJwtAuth(string username, string password)
         {
             try
             {
@@ -100,7 +107,7 @@ namespace Watchzone.Services
                     var json = JsonConvert.SerializeObject(authData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync(JwtAuthUrl, content);
+                    var response = await client.PostAsync($"{_appSettings.BaseUrl}wp-json/jwt-auth/v1/token", content);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -126,21 +133,21 @@ namespace Watchzone.Services
             return false;
         }
 
-        private static async Task<List<Customer>> GetCustomersByEmail(string email)
+        private async Task<List<Customer>> GetCustomersByEmail(string email)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
                     // WooCommerce API authentication
-                    var authBytes = Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}");
+                    var authBytes = Encoding.UTF8.GetBytes($"{_appSettings.ConsumerKey} : {_appSettings.ConsumerSecret}");
                     client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
                             Convert.ToBase64String(authBytes));
 
                     // URL encode the email
                     var encodedEmail = HttpUtility.UrlEncode(email);
-                    var response = await client.GetAsync($"{WooCommerceBaseUrl}customers?email={encodedEmail}");
+                    var response = await client.GetAsync($"{_appSettings.BaseUrl}wp-json/wc/v3/customers?email={encodedEmail}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -157,21 +164,21 @@ namespace Watchzone.Services
             return null;
         }
 
-        private static async Task<Customer> GetCustomerByUsername(string username)
+        private async Task<Customer> GetCustomerByUsername(string username)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
                     // WooCommerce API authentication
-                    var authBytes = Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}");
+                    var authBytes = Encoding.UTF8.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}");
                     client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
                             Convert.ToBase64String(authBytes));
 
                     // Search customers - note: WooCommerce API doesn't directly support username search
                     // This is a workaround by searching all customers and filtering
-                    var response = await client.GetAsync($"{WooCommerceBaseUrl}customers");
+                    var response = await client.GetAsync($"{_appSettings.BaseUrl}wp-json/wc/v3/customers");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -191,7 +198,7 @@ namespace Watchzone.Services
             return null;
         }
 
-        public static async Task<bool> ResetPassword(string email)
+        public async Task<bool> ResetPassword(string email)
         {
             // This would typically use a WordPress plugin or custom endpoint
             // For now, we'll just simulate success
@@ -199,7 +206,7 @@ namespace Watchzone.Services
             return true;
         }
 
-        private static bool IsEmail(string input)
+        private  bool IsEmail(string input)
         {
             try
             {
@@ -217,8 +224,8 @@ namespace Watchzone.Services
         {
             try
             {
-                var apiUrl = $"{WooCommerceBaseUrl}products?orderby=date&order=desc&per_page={perPage}";
-                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ConsumerKey}:{ConsumerSecret}"));
+                var apiUrl = $"{_appSettings.BaseUrl}wp-json/wc/v3/products?orderby=date&order=desc&per_page={perPage}";
+                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}"));
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authToken);
                 var response = await _httpClient.GetAsync(apiUrl);
@@ -242,8 +249,8 @@ namespace Watchzone.Services
         {
             try
             {
-                var url = $"{WooCommerceBaseUrl}products/categories?per_page=100";
-                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ConsumerKey}:{ConsumerSecret}"));
+                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/products/categories?per_page=100";
+                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}"));
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authToken);
 
@@ -267,9 +274,9 @@ namespace Watchzone.Services
         {
             try
             {
-                var url = $"{WooCommerceBaseUrl}/wp-json/wc/v3/orders?" +
-                         $"consumer_key={ConsumerKey}&" +
-                         $"consumer_secret={ConsumerSecret}&" +
+                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/customers" +
+                         $"consumer_key={_appSettings.ConsumerKey}&" +
+                         $"consumer_secret={_appSettings.ConsumerSecret}&" +
                          $"customer={customerId}";
 
                 var response = await _httpClient.GetAsync(url);
@@ -292,9 +299,9 @@ namespace Watchzone.Services
         {
             try
             {
-                var url = $"{WooCommerceBaseUrl}/wp-json/wc/v3/customers/{customerId}?" +
-                         $"consumer_key={ConsumerKey}&" +
-                         $"consumer_secret={ConsumerSecret}";
+                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/customers/{customerId}?" +
+                         $"consumer_key={_appSettings.ConsumerKey}&" +
+                         $"consumer_secret={_appSettings.ConsumerSecret}";
 
                 var response = await _httpClient.GetAsync(url);
 
@@ -312,7 +319,6 @@ namespace Watchzone.Services
             }
         }
 
-        // Services/WoocommerceServices.cs (add this method to your existing service)
         public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId, int perPage = 100)
         {
             var all = new List<Product>();
@@ -320,8 +326,8 @@ namespace Watchzone.Services
 
             while (true)
             {
-                var url = $"{WooCommerceBaseUrl}products?category={categoryId}&per_page={perPage}&page={page}";
-                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ConsumerKey}:{ConsumerSecret}"));
+                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/products?category={categoryId}&per_page={perPage}&page={page}";
+                var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}"));
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authToken);
 
@@ -348,6 +354,65 @@ namespace Watchzone.Services
             return all;
         }
 
+        public async Task<Product> GetProductAsync(int productId)
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                var url = $"{_appSettings.BaseUrl}/wp-json/wc/v3/products/{productId}";
 
+                // Add authentication
+                var authBytes = System.Text.Encoding.UTF8.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}");
+                var authHeader = Convert.ToBase64String(authBytes);
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
+
+                var response = await httpClient.GetStringAsync(url);
+                var product = JsonConvert.DeserializeObject<Product>(response);
+
+                //if (product != null && !string.IsNullOrEmpty(product.Description))
+                //{
+                //    // Remove HTML tags
+                //    product.Description = Regex.Replace(product.Description, "<.*?>", string.Empty);
+                //}
+
+                return product;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching product: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<List<Review>> GetProductReviewsAsync(int productId)
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                var url = $"{_appSettings.BaseUrl}/wp-json/wc/v3/products/reviews?product={productId}";
+
+                // Add authentication
+                var authBytes = System.Text.Encoding.UTF8.GetBytes($"{_appSettings.ConsumerKey}:{_appSettings.ConsumerSecret}");
+                var authHeader = Convert.ToBase64String(authBytes);
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
+
+                var response = await httpClient.GetStringAsync(url);
+
+                var reviews = JsonConvert.DeserializeObject<List<Review>>(response);
+                foreach (var review in reviews)
+                {
+                    review.ReviewText = Regex.Replace(review.ReviewText, "<.*?>", string.Empty).Trim();
+                }
+
+                return reviews;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching reviews: {ex.Message}");
+                return new List<Review>();
+            }
+        }
     }
 }

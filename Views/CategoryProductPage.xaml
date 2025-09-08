@@ -19,6 +19,10 @@ VerticalItemSpacing="10"/>
                     <DataTemplate>
                         <Frame HeightRequest="250" HasShadow="True" CornerRadius="15" Padding="0" BackgroundColor="White">
 
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnProductTapped" 
+                                 CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
                             <Grid RowDefinitions="150,Auto,Auto,Auto">
                                 <Image Source="{Binding Images[0].Src, TargetNullValue='placeholder'}"
                        Aspect="AspectFill"
@@ -30,15 +34,35 @@ VerticalItemSpacing="10"/>
                        LineBreakMode="TailTruncation"
                        MaxLines="1"
                        TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
-                                <Label Text="{Binding Price, StringFormat='₹{0}'}"
-                       Grid.Row="2"
-                       Margin="10,0,10,0"
-                       FontAttributes="Bold"
-                       TextColor="#FF5E00" />
+                               <!-- Price Section -->
+<HorizontalStackLayout Grid.Row="2" Margin="10,0,10,0" Spacing="8" VerticalOptions="Center">
+
+    <!-- Regular Price (Strikethrough) -->
+    <Label Text="{Binding RegularPrice, StringFormat='₹{0}'}"
+           FontSize="14"
+           TextColor="Gray"
+           TextDecorations="Strikethrough"
+           IsVisible="{Binding OnSale}" />
+
+    <!-- Sale Price -->
+    <Label Text="{Binding SalePrice, StringFormat='₹{0}'}"
+           FontSize="16"
+           FontAttributes="Bold"
+           TextColor="Red"
+           IsVisible="{Binding OnSale}" />
+
+    <!-- Normal Price (if not on sale) -->
+    <Label Text="{Binding Price, StringFormat='₹{0}'}"
+           FontSize="16"
+           FontAttributes="Bold"
+           TextColor="Green"
+           IsVisible="{Binding OnSale, Converter={StaticResource InverseBooleanConverter}}" />
+</HorizontalStackLayout>
+
                                 <Button Text="Add to Cart"
                     Grid.Row="3"
                     Margin="10,5,10,10"
-                    BackgroundColor="#FF5E00"
+                    BackgroundColor="Orange"
                     TextColor="White"
                     CornerRadius="10"
                     HorizontalOptions="Center"

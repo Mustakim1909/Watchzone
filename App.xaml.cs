@@ -1,14 +1,17 @@
-﻿using Watchzone.Views;
+﻿using Watchzone.Services;
+using Watchzone.Views;
 
 namespace Watchzone
 {
     public partial class App : Application
     {
-        public App()
+        private WoocommerceServices _woocommerceServices;
+        public App(WoocommerceServices woocommerceServices)
         {
             InitializeComponent();
+            _woocommerceServices = woocommerceServices;
 
-            MainPage = new NavigationPage(new LoginPage());
+            MainPage = new NavigationPage(new LoginPage(_woocommerceServices));
         }
     }
 }

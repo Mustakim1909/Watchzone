@@ -1,13 +1,16 @@
 using System.Text.RegularExpressions;
+using Watchzone.Interfaces;
 using Watchzone.Services;
 
 namespace Watchzone.Views;
 
 public partial class SignUpPage : ContentPage
 {
-	public SignUpPage()
+    private IWoocommerceServices _woocommerceServices;
+	public SignUpPage(IWoocommerceServices woocommerceServices)
 	{
 		InitializeComponent();
+        _woocommerceServices = woocommerceServices;
 	}
     private void OnEntryTextChanged(object sender, TextChangedEventArgs e)
     {
@@ -152,7 +155,7 @@ public partial class SignUpPage : ContentPage
             };
 
             // Call your WooCommerce integration service
-            bool success = await WoocommerceServices.RegisterCustomer(customerData);
+            bool success = await _woocommerceServices.RegisterCustomer(customerData);
 
             if (success)
             {

@@ -9,7 +9,8 @@
     using System.Text;
     using System.Threading.Tasks;
     using Watchzone.Helper;
-    using Watchzone.Models;
+using Watchzone.Interfaces;
+using Watchzone.Models;
     using Watchzone.Services;
 
     namespace Watchzone.ViewModels
@@ -38,13 +39,13 @@
             private string errorMessage;
 
             private User currentUser;
-            private readonly WoocommerceServices _wooCommerceService;
+            private readonly IWoocommerceServices _wooCommerceService;
 
-            public MainViewModel()
+            public MainViewModel(IWoocommerceServices wooCommerceService)
             {
                 Products = new ObservableCollection<Product>();
-                _wooCommerceService = new WoocommerceServices();
-                Categories = new ObservableCollection<Category>();
+                 _wooCommerceService = wooCommerceService;
+                 Categories = new ObservableCollection<Category>();
 
                 LoadUserData();
                 LoadProductsCommand.ExecuteAsync(null);

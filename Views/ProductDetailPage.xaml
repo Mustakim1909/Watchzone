@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Watchzone.Views.ProductDetailPage"
+             xmlns:converters="clr-namespace:Watchzone.Converters"
+             BackgroundColor="{AppThemeBinding Light=#f2f2f2, Dark=#1c1c1c}"
+             Shell.TabBarIsVisible="False"
+             Title="Product Details">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:RatingToStarsConverter x:Key="RatingToStarsConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <!-- Scrollable Content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Product Image Carousel -->
+                <CarouselView HeightRequest="350"
+                              IndicatorView="indicator"
+                              ItemsSource="{Binding Product.Images}">
+                    <CarouselView.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding Src}" 
+                                   Aspect="AspectFill"
+                                   BackgroundColor="LightGray"/>
+                        </DataTemplate>
+                    </CarouselView.ItemTemplate>
+                </CarouselView>
+                <IndicatorView x:Name="indicator"
+                               IndicatorColor="LightGray"
+                               SelectedIndicatorColor="{StaticResource Primary}"
+                               HorizontalOptions="Center" Margin="0,5"/>
+
+                <!-- Product Info Section -->
+                <VerticalStackLayout Spacing="10"
+                                     BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+                                     Padding="15">
+
+                    <!-- Product Title -->
+                    <Label Text="{Binding Product.Name}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#222, Dark=White}"/>
+
+                    <!-- Ratings -->
+                    <HorizontalStackLayout Spacing="5">
+                        <Image Source="star.png" HeightRequest="18" WidthRequest="18"/>
+                        <Label Text="{Binding Product.AverageRating}" FontSize="14" FontAttributes="Bold"/>
+                        <Label Text="{Binding Product.RatingCount, StringFormat='({0} ratings)'}"
+                               FontSize="14" TextColor="Gray"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Price -->
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="{Binding Product.RegularPrice, StringFormat='₹{0}'}"
+                               FontSize="16"
+                               TextDecorations="Strikethrough"
+                               TextColor="Gray"
+                               IsVisible="{Binding Product.OnSale}"/>
+                        <Label Text="{Binding Product.SalePrice, StringFormat='₹{0}'}"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="Red"
+                               IsVisible="{Binding Product.OnSale}"/>
+                        <Label Text="{Binding Product.Price, StringFormat='₹{0}'}"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="Green"
+                               IsVisible="{Binding Product.OnSale, Converter={StaticResource InverseBooleanConverter}}"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Inclusive of all taxes" FontSize="12" TextColor="Gray"/>
+
+                </VerticalStackLayout>
+
+                <!-- Divider -->
+                <BoxView HeightRequest="8" Color="#eeeeee"/>
+
+                <!-- Offers Section -->
+                <VerticalStackLayout Spacing="5"
+                                     BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+                                     Padding="15">
+                    <Label Text="Available Offers" FontSize="18" FontAttributes="Bold"/>
+                    <Label Text="• Bank Offer: 10% Instant Discount on XYZ Bank Credit Cards"
+                           FontSize="14" TextColor="Gray"/>
+                    <Label Text="• Special Price: Get extra ₹500 off (price inclusive)"
+                           FontSize="14" TextColor="Gray"/>
+                </VerticalStackLayout>
+
+                <!-- Divider -->
+                <BoxView HeightRequest="8" Color="#eeeeee"/>
+
+                <!-- Description -->
+                <VerticalStackLayout Spacing="5"
+                                     BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+                                     Padding="15">
+                    <Label Text="Product Description" FontSize="18" FontAttributes="Bold"/>
+                    <WebView VerticalOptions="FillAndExpand"
+                            HorizontalOptions="FillAndExpand">
+                        <WebView.Source>
+                            <HtmlWebViewSource Html="{Binding Product.Description}" />
+                        </WebView.Source>
+                    </WebView>
+
+                </VerticalStackLayout>
+
+                <!-- Divider -->
+                <BoxView HeightRequest="8" Color="#eeeeee"/>
+
+                <!-- Reviews -->
+                <VerticalStackLayout Spacing="10"
+                     BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+                     Padding="15">
+                    <Label Text="Customer Reviews" FontSize="18" FontAttributes="Bold"/>
+
+                    <CollectionView ItemsSource="{Binding Reviews}" 
+                    EmptyView="No reviews yet."
+                    Margin="0,5,0,0">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="15"/>
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="0,0,0,0"
+                       HasShadow="False"
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+                       BorderColor="#ddd"
+                       CornerRadius="8">
+
+                                    <VerticalStackLayout Spacing="5">
+
+                                        <!-- Name (left) + Date (right) -->
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Text="{Binding Reviewer}"
+                                   FontAttributes="Bold"
+                                   FontSize="14"
+                                   TextColor="Black"
+                                   Grid.Column="0"/>
+
+                                            <Label Text="{Binding Date, StringFormat='{0:dd MMM yyyy}'}"
+                                   FontSize="12"
+                                   TextColor="Gray"
+                                   Grid.Column="1"/>
+                                        </Grid>
+
+                                        <!-- ⭐ Rating Stars -->
+                                        <CollectionView ItemsSource="{Binding Rating, Converter={StaticResource RatingToStarsConverter}}"
+                                        ItemsLayout="HorizontalList"
+                                        HeightRequest="20"
+                                        Margin="0,2,0,0"
+                                        SelectionMode="None">
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Image Source="{Binding .}" HeightRequest="16" WidthRequest="16"/>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+
+                                        <!-- Review text -->
+                                        <Label Text="{Binding ReviewText}" FontSize="14"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Fixed Bottom Buttons -->
+        <Grid Grid.Row="1"
+      ColumnDefinitions="*,*"
+      ColumnSpacing="12"
+      BackgroundColor="{AppThemeBinding Light=White, Dark=#2b2b2b}"
+      Padding="10"
+      HeightRequest="80">
+
+            <!-- Add to Cart -->
+            <Button Text="Add to Cart"
+            Grid.Column="0"
+            BackgroundColor="Orange"
+            TextColor="White"
+            CornerRadius="8"
+            FontAttributes="Bold"
+            HeightRequest="50"
+            VerticalOptions="Center"
+            HorizontalOptions="FillAndExpand"
+            Command="{Binding AddToCartCommand}"/>
+
+            <!-- Buy Now -->
+            <Button Text="Buy Now"
+            Grid.Column="1"
+            BackgroundColor="Green"
+            TextColor="White"
+            CornerRadius="8"
+            FontAttributes="Bold"
+            HeightRequest="50"
+            VerticalOptions="Center"
+            HorizontalOptions="FillAndExpand"
+            Command="{Binding BuyNowCommand}"/>
+        </Grid>
+
+
+    </Grid>
+</ContentPage>

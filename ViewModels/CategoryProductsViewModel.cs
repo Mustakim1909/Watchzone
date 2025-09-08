@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Watchzone.Interfaces;
 using Watchzone.Models;
 using Watchzone.Services;
 
@@ -13,7 +14,7 @@ namespace Watchzone.ViewModels
 {
     public partial class CategoryProductsViewModel : ObservableObject
     {
-        private readonly WoocommerceServices _service;
+        private readonly IWoocommerceServices _service;
 
         [ObservableProperty]
         private ObservableCollection<Product> products = new();
@@ -37,10 +38,9 @@ namespace Watchzone.ViewModels
         private const int PerPage = 20; // smaller page if you want infinite scroll
         private bool hasMore = true;
         private bool isLoadingMore = false;
-
-        public CategoryProductsViewModel(int categoryId, string categoryName)
+        public CategoryProductsViewModel(IWoocommerceServices service, int categoryId, string categoryName)
         {
-            _service = new WoocommerceServices(); // or inject existing service
+            _service = service;
             CategoryId = categoryId;
             Title = categoryName ?? "Products";
         }

@@ -1,14 +1,18 @@
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Watchzone.Models;
+using Watchzone.Services;
 using Watchzone.ViewModels;
 
 namespace Watchzone.Views;
 
 public partial class CategoryPage : ContentPage
 {
-    public CategoryPage(MainViewModel vm)
+    private WoocommerceServices _woocommerceServices;
+    public CategoryPage(WoocommerceServices woocommerceServices)
     {
         InitializeComponent();
-        BindingContext = vm;
+        _woocommerceServices = woocommerceServices;
+        BindingContext = new MainViewModel(_woocommerceServices);
     }
 
     protected override async void OnAppearing()
@@ -16,25 +20,14 @@ public partial class CategoryPage : ContentPage
         base.OnAppearing();
         await (BindingContext as MainViewModel).LoadCategories(true);
     }
-    private async void OnCategorySelected(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is Category selectedCategory)
-        {
-            if (!selectedCategory.IsMore) // "More" pe click ignore
-            {
-                await Navigation.PushAsync(new CategoryProductPage(selectedCategory.Id, selectedCategory.Name));
-            }
-
-            ((CollectionView)sender).SelectedItem = null; // clear selection
-        }
-    }
     private async void OnCategoryTapped(object sender, EventArgs e)
     {
         if ((sender as Frame)?.BindingContext is Category selectedCategory)
         {
             if (!selectedCategory.IsMore)
             {
-                await Navigation.PushAsync(new CategoryProductPage(selectedCategory.Id, selectedCategory.Name));
+                var page = new CategoryProductPage(_woocommerceServices, selectedCategory.Id, selectedCategory.Name);
+                await Navigation.PushAsync(page);
             }
             else
             {
