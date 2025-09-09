@@ -192,7 +192,8 @@
             HeightRequest="50"
             VerticalOptions="Center"
             HorizontalOptions="FillAndExpand"
-            Command="{Binding AddToCartCommand}"/>
+            CommandParameter="{Binding Product}"
+            Clicked="OnAddToCartClicked"/>
 
             <!-- Buy Now -->
             <Button Text="Buy Now"

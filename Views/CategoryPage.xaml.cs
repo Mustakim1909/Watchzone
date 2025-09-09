@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Watchzone.Interfaces;
 using Watchzone.Models;
 using Watchzone.Services;
 using Watchzone.ViewModels;
@@ -7,8 +8,8 @@ namespace Watchzone.Views;
 
 public partial class CategoryPage : ContentPage
 {
-    private WoocommerceServices _woocommerceServices;
-    public CategoryPage(WoocommerceServices woocommerceServices)
+    private IWoocommerceServices _woocommerceServices;
+    public CategoryPage(IWoocommerceServices woocommerceServices)
     {
         InitializeComponent();
         _woocommerceServices = woocommerceServices;

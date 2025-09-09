@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Watchzone.Converters"
+             x:Class="Watchzone.Views.CheckoutPage"
+             Title="Checkout"
+             BackgroundColor="#F5F5F5">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:DefaultCountryConverter x:Key="DefaultCountryConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <StackLayout Padding="10" Spacing="15">
+
+            <!-- Shipping Address -->
+            <Frame Padding="15" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Shipping Address" FontSize="16" FontAttributes="Bold"/>
+
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Entry Placeholder="Full Name" Text="{Binding ShippingAddress.FullName}" 
+                               ClearButtonVisibility="WhileEditing"/>
+                        <Entry Placeholder="Mobile Number" Text="{Binding ShippingAddress.Phone}" 
+                               Keyboard="Telephone" ClearButtonVisibility="WhileEditing"/>
+                        <Entry Placeholder="Street Address" Text="{Binding ShippingAddress.Address1}" 
+                               ClearButtonVisibility="WhileEditing"/>
+                        <Entry Placeholder="Apartment, suite, etc. (optional)" 
+                               Text="{Binding ShippingAddress.Address2}" ClearButtonVisibility="WhileEditing"/>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Entry Grid.Column="0" Placeholder="City" Text="{Binding ShippingAddress.City}" 
+                                   ClearButtonVisibility="WhileEditing"/>
+                            <Entry Grid.Column="1" Placeholder="State" Text="{Binding ShippingAddress.State}" 
+                                   ClearButtonVisibility="WhileEditing"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Entry Grid.Column="0" Placeholder="Postal Code" Text="{Binding ShippingAddress.Postcode}" 
+                                   ClearButtonVisibility="WhileEditing"/>
+                            <Entry Grid.Column="1"
+       Placeholder="Enter Country"
+       Text="{Binding ShippingAddress.Country, Converter={StaticResource DefaultCountryConverter}}" />
+
+                        </Grid>
+
+                        <CheckBox IsChecked="{Binding SaveShippingAddress}" Color="#FF9900"/>
+                        <Label Text="Save this address for future purchases" FontSize="14" 
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSaveAddressCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Billing Address -->
+            <Frame Padding="15" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Billing Address" FontSize="16" FontAttributes="Bold"/>
+
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout VerticalOptions="Center">
+                            <Label Text="Use same address for billing?" VerticalOptions="Center"/>
+                            <Switch IsToggled="{Binding UseSameAddressForBilling}" ThumbColor="#FF9900"/>
+                        </HorizontalStackLayout>
+
+                        <StackLayout IsVisible="{Binding UseSameAddressForBilling, Converter={StaticResource InverseBooleanConverter}}">
+                            <Entry Placeholder="Full Name" Text="{Binding BillingAddress.FullName}" 
+                                   ClearButtonVisibility="WhileEditing"/>
+                            <Entry Placeholder="Street Address" Text="{Binding BillingAddress.Address1}" 
+                                   ClearButtonVisibility="WhileEditing"/>
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Entry Grid.Column="0" Placeholder="City" Text="{Binding BillingAddress.City}" 
+                                       ClearButtonVisibility="WhileEditing"/>
+                                <Entry Grid.Column="1" Placeholder="State" Text="{Binding BillingAddress.State}" 
+                                       ClearButtonVisibility="WhileEditing"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Entry Grid.Column="0" Placeholder="Postal Code" Text="{Binding BillingAddress.Postcode}" 
+                                       ClearButtonVisibility="WhileEditing"/>
+                                <Entry Grid.Column="1"
+Placeholder="Enter Country"
+Text="{Binding BillingAddress.Country, Converter={StaticResource DefaultCountryConverter}}" />
+                            </Grid>
+                        </StackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Payment Method -->
+            <Frame Padding="15" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Payment Method" FontSize="16" FontAttributes="Bold"/>
+
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                    <VerticalStackLayout>
+                        <RadioButton Content="Credit/Debit Card" IsChecked="True" 
+                                     Value="Card" GroupName="PaymentMethod"/>
+                        <RadioButton Content="UPI" Value="UPI" GroupName="PaymentMethod"/>
+                        <RadioButton Content="Net Banking" Value="NetBanking" GroupName="PaymentMethod"/>
+                        <RadioButton Content="Cash on Delivery" Value="COD" GroupName="PaymentMethod"/>
+                    </VerticalStackLayout>
+
+                    <StackLayout>
+                        <BoxView HeightRequest="1" Color="LightGray" Margin="0,10"/>
+
+                        <Frame Padding="10" CornerRadius="5" BorderColor="LightGray">
+                            <VerticalStackLayout Spacing="10">
+                                <Entry Placeholder="Card Number" Keyboard="Numeric" 
+                                       ClearButtonVisibility="WhileEditing"/>
+
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <Entry Grid.Column="0" Placeholder="MM/YY" 
+                                           ClearButtonVisibility="WhileEditing"/>
+                                    <Entry Grid.Column="1" Placeholder="CVV" Keyboard="Numeric" 
+                                           ClearButtonVisibility="WhileEditing"/>
+                                </Grid>
+
+                                <Entry Placeholder="Name on Card" ClearButtonVisibility="WhileEditing"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Order Summary -->
+            <Frame Padding="15" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Order Summary" FontSize="16" FontAttributes="Bold"/>
+
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                    <CollectionView ItemsSource="{Binding CartItems}" HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="40,*,Auto" RowSpacing="5" Padding="0,5">
+                                    <Image Grid.Column="0" Source="{Binding ImageUrl}" 
+                                           Aspect="AspectFill" HeightRequest="40" WidthRequest="40"/>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="10,0">
+                                        <Label Text="{Binding Name}" FontSize="14" 
+                                               LineBreakMode="TailTruncation" MaxLines="1"/>
+                                        <Label Text="{Binding Brand}" FontSize="12" 
+                                               TextColor="#666666"/>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="2" Text="{Binding TotalPrice, StringFormat='₹{0:F2}'}" 
+                                           FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout>
+                            <Label Text="Subtotal:" HorizontalOptions="StartAndExpand" 
+                                   FontSize="14" TextColor="#666666"/>
+                            <Label Text="{Binding Subtotal, StringFormat='₹{0:F2}'}" 
+                                   HorizontalOptions="End" FontSize="14"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="Shipping:" HorizontalOptions="StartAndExpand" 
+                                   FontSize="14" TextColor="#666666"/>
+                            <Label Text="{Binding ShippingCost, StringFormat='₹{0:F2}'}" 
+                                   HorizontalOptions="End" FontSize="14"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="Tax:" HorizontalOptions="StartAndExpand" 
+                                   FontSize="14" TextColor="#666666"/>
+                            <Label Text="{Binding TaxAmount, StringFormat='₹{0:F2}'}" 
+                                   HorizontalOptions="End" FontSize="14"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="Discount:" HorizontalOptions="StartAndExpand" 
+                                   FontSize="14" TextColor="#666666"/>
+                            <Label Text="{Binding DiscountAmount, StringFormat='-₹{0:F2}'}" 
+                                   HorizontalOptions="End" FontSize="14" TextColor="Green"/>
+                        </HorizontalStackLayout>
+
+                        <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+
+                        <HorizontalStackLayout>
+                            <Label Text="Total:" FontSize="16" FontAttributes="Bold" 
+                                   HorizontalOptions="StartAndExpand"/>
+                            <Label Text="{Binding Total, StringFormat='₹{0:F2}'}" FontSize="16" 
+                                   FontAttributes="Bold" HorizontalOptions="End"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Coupon Section -->
+            <Frame Padding="15" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout>
+                        <Label Text="🎁" FontSize="16" VerticalOptions="Center"/>
+                        <Label Text="Apply Coupon" FontSize="16" VerticalOptions="Center" 
+                               Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry Placeholder="Enter coupon code" Text="{Binding CouponCode}" 
+                               HorizontalOptions="FillAndExpand" ClearButtonVisibility="WhileEditing"/>
+                        <Button Text="Apply" Command="{Binding ApplyCouponCommand}" 
+                                CornerRadius="5" BackgroundColor="#FFF0D0" 
+                                TextColor="#FF9900" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+
+                    <Button Text="Remove Coupon" Command="{Binding RemoveCouponCommand}"
+                            IsVisible="{Binding IsCouponApplied}" TextColor="Red"
+                            BackgroundColor="Transparent" BorderColor="Red" BorderWidth="1"
+                            CornerRadius="5"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Place Order Button -->
+            <Grid ColumnDefinitions="*,2*" ColumnSpacing="10" Margin="0,10">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Total Amount" FontSize="14" TextColor="#666666"/>
+                    <Label Text="{Binding Total, StringFormat='₹{0:F2}'}" FontSize="18" 
+                           FontAttributes="Bold" TextColor="#FF9900"/>
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1" Text="Place Order" Command="{Binding PlaceOrderCommand}"
+                        BackgroundColor="#FF9900" TextColor="White"
+                        FontSize="16" HeightRequest="50" CornerRadius="10" FontAttributes="Bold"/>
+            </Grid>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

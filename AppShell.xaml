@@ -26,5 +26,7 @@
             <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" Route="ProfilePage"/>
         </Tab>
     </TabBar>
+    <ShellContent ContentTemplate="{DataTemplate views:CartPage}" Route="CartPage"/>
+    <ShellContent ContentTemplate="{DataTemplate views:CheckoutPage}" Route="CheckoutPage"/>
 
 </Shell>

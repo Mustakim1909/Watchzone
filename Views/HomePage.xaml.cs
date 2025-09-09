@@ -1,4 +1,8 @@
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using System.Threading.Tasks;
+using Watchzone.Interfaces;
 using Watchzone.Models;
 using Watchzone.Services;
 using Watchzone.ViewModels;
@@ -7,8 +11,8 @@ namespace Watchzone.Views;
 
 public partial class HomePage : ContentPage
 {
-    private WoocommerceServices _woocommerceServices;
-    public HomePage(WoocommerceServices woocommerceServices)
+    private IWoocommerceServices _woocommerceServices;
+    public HomePage(IWoocommerceServices woocommerceServices)
     {
         InitializeComponent();
         _woocommerceServices = woocommerceServices;
@@ -31,9 +35,9 @@ public partial class HomePage : ContentPage
         }
     }
 
-    private void OnCartClicked(object sender, EventArgs e)
+    private async void OnCartClicked(object sender, EventArgs e)
     {
-        DisplayAlert("Cart", "Cart button clicked", "OK");
+        await Navigation.PushAsync(new CartPage(_woocommerceServices));
     }
 
     private void OnSearchButtonPressed(object sender, EventArgs e)
@@ -42,11 +46,76 @@ public partial class HomePage : ContentPage
         DisplayAlert("Search", $"Searching for: {searchBar.Text}", "OK");
     }
 
-    private void OnAddToCartClicked(object sender, EventArgs e)
+    private async void OnAddToCartClicked(object sender, EventArgs e)
     {
         var button = (Button)sender;
         var product = (Product)button.CommandParameter;
-        DisplayAlert("Added to Cart", $"{product.Name} added to cart", "OK");
+        if (IsBusy || product == null) return;
+
+        IsBusy = true;
+        try
+        {
+            int customerId = App.CurrentCustomerId;
+
+            if (customerId <= 0)
+            {
+                var snackbar = Snackbar.Make(
+                    "Please login first",
+                    async () => await Shell.Current.GoToAsync("//LoginPage"),
+                    "Login",
+                    TimeSpan.FromSeconds(3),
+                    new SnackbarOptions
+                    {
+                        BackgroundColor = Colors.DarkRed,   // 🔴 Background
+                        TextColor = Colors.White,          // ⚪ Text
+                        ActionButtonTextColor = Colors.Yellow, // 🟡 Action text
+                        CornerRadius = new CornerRadius(8), // Rounded corners
+                        CharacterSpacing = 1.2
+                    });
+
+                await snackbar.Show();
+                return;
+            }
+
+            var success = await _woocommerceServices.AddToCartAsync(customerId, product.Id, 1);
+            if (success)
+            {
+                var snackbar = Snackbar.Make(
+                    $"Added to Cart",
+                    async () => await Navigation.PushAsync(new CartPage(_woocommerceServices)),
+                    "View Cart",
+                    TimeSpan.FromSeconds(3),
+                    new SnackbarOptions
+                    {
+                        BackgroundColor = Colors.Green,
+                        TextColor = Colors.White,
+                        ActionButtonTextColor = Colors.Orange,
+                        CornerRadius = new CornerRadius(10)
+                    });
+
+                await snackbar.Show();
+            }
+            else
+            {
+                var snackbar = Snackbar.Make(
+                    "Failed to add product to cart",
+                    null,
+                    null,
+                    TimeSpan.FromSeconds(3),
+                    new SnackbarOptions
+                    {
+                        BackgroundColor = Colors.Gray,
+                        TextColor = Colors.White,
+                        CornerRadius = new CornerRadius(5)
+                    });
+
+                await snackbar.Show();
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void OnHomeClicked(object sender, EventArgs e) { }

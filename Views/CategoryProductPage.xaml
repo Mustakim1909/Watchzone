@@ -68,6 +68,7 @@ VerticalItemSpacing="10"/>
                     HorizontalOptions="Center"
                     WidthRequest="120"
                     HeightRequest="40"
+                    Clicked="OnAddToCartClicked"
                     CommandParameter="{Binding .}" />
                             </Grid>
                         </Frame>

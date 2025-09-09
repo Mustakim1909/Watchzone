@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Watchzone.Converters"
+             x:Class="Watchzone.Views.CartPage"
+             Title="My Cart"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="#F2F3F7">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IntToBoolConverter x:Key="IntToBoolConverter"/>
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="TextTransform" Value="Uppercase" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- CollectionView for Cart Items -->
+        <CollectionView x:Name="CartCollectionView"
+                        ItemsSource="{Binding CartItems}"
+                        Margin="10"
+                        IsVisible="{Binding CartItems.Count, Converter={StaticResource IntToBoolConverter}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="10,6"
+               Padding="0"
+               HasShadow="True"
+               CornerRadius="8"
+               BackgroundColor="White"
+               BorderColor="#F0F0F0">
+
+                        <Grid ColumnDefinitions="90,*,Auto"
+                  RowDefinitions="Auto,Auto,Auto"
+                  ColumnSpacing="8"
+                  RowSpacing="2"
+                  Padding="10">
+
+                            <!-- Product Image -->
+                            <Image Source="{Binding Product.Images[0].Src}"
+                       Aspect="AspectFill"
+                       HeightRequest="90"
+                       WidthRequest="90"
+                       Grid.RowSpan="3"
+                       Grid.Column="0"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"
+                       BackgroundColor="#F5F5F5"/>
+
+                            <!-- Product Name -->
+                            <Label Text="{Binding Product.Name}"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       LineBreakMode="TailTruncation"
+                       Grid.Column="1"
+                       Grid.Row="0"
+                       TextColor="#222222"
+                       MaxLines="2"
+                       VerticalOptions="Start"/>
+
+                            <!-- Price + Discount -->
+                            <StackLayout Orientation="Horizontal"
+                             Grid.Column="1"
+                             Grid.Row="1"
+                             Spacing="4"
+                             VerticalOptions="Center">
+                                <Label Text="{Binding Subtotal, StringFormat='₹{0:F0}'}"
+                           FontSize="16"
+                           TextColor="#E53935"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+                                <Label Text="{Binding Product.RegularPrice, StringFormat='₹{0:F0}'}"
+                           FontSize="13"
+                           TextDecorations="Strikethrough"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                                <Label Text="{Binding DiscountPercentage, StringFormat='{0}% off'}"
+                           FontSize="12"
+                           TextColor="#388E3C"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+                            </StackLayout>
+
+                            <!-- Remove Button - Top right -->
+                            <Button Text="REMOVE"
+                        Command="{Binding BindingContext.RemoveItemCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                        CommandParameter="{Binding .}"
+                        BackgroundColor="Transparent"
+                        TextColor="#1976D2"
+                        FontSize="11"
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        Margin="0,0,0,10"/>
+
+                            <!-- Quantity Controls - Middle right (aligned with price) -->
+                            <StackLayout Orientation="Horizontal"
+                             Spacing="2"
+                             Grid.Column="2"
+                             Grid.Row="2"
+                             HorizontalOptions="End"
+                             VerticalOptions="Start">
+                                <Button Text="-"
+                            Command="{Binding BindingContext.DecreaseQuantityCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                            CommandParameter="{Binding .}"
+                            WidthRequest="28"
+                            HeightRequest="28"
+                            BackgroundColor="#F8F8F8"
+                            TextColor="Black"
+                            CornerRadius="14"
+                            BorderWidth="1"
+                            BorderColor="#E0E0E0"
+                            FontSize="14"
+                            FontAttributes="Bold"/>
+                                <Label Text="{Binding Quantity}"
+                           FontSize="14"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           WidthRequest="24"
+                           TextColor="#222222"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                                <Button Text="+"
+                            Command="{Binding BindingContext.IncreaseQuantityCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                            CommandParameter="{Binding .}"
+                            WidthRequest="28"
+                            HeightRequest="28"
+                            BackgroundColor="#F8F8F8"
+                            TextColor="Black"
+                            CornerRadius="14"
+                            BorderWidth="1"
+                            BorderColor="#E0E0E0"
+                            FontSize="14"
+                            FontAttributes="Bold"/>
+                            </StackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <!-- Empty View -->
+            <CollectionView.EmptyView>
+                <StackLayout Padding="40" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Image Source="empty_cart.png" HeightRequest="120" WidthRequest="120"/>
+                    <Label Text="Your cart is empty" 
+                           FontSize="18" 
+                           TextColor="#555"
+                           HorizontalOptions="Center"/>
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- Summary & Checkout -->
+        <StackLayout Grid.Row="1"
+                     Padding="10"
+                     BackgroundColor="White"
+                     IsVisible="{Binding CartItems.Count, Converter={StaticResource IntToBoolConverter}}">
+
+            <!-- Totals -->
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnDefinitions="*,Auto"
+                  Margin="0,0,0,10">
+
+                <Label Text="Subtotal" Grid.Row="0" Grid.Column="0" FontSize="14" TextColor="#555"/>
+                <Label Text="{Binding Subtotal, StringFormat='₹ {0:F2}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold"/>
+
+                <Label Text="Shipping" Grid.Row="1" Grid.Column="0" FontSize="14" TextColor="#555"/>
+                <Label Text="{Binding ShippingCost, StringFormat='₹ {0:F2}'}" Grid.Row="1" Grid.Column="1" FontAttributes="Bold"/>
+
+                <Label Text="Tax" Grid.Row="2" Grid.Column="0" FontSize="14" TextColor="#555"/>
+                <Label Text="{Binding TaxAmount, StringFormat='₹ {0:F2}'}" Grid.Row="2" Grid.Column="1" FontAttributes="Bold"/>
+
+                <Label Text="Total" Grid.Row="3" Grid.Column="0" FontSize="16" FontAttributes="Bold"/>
+                <Label Text="{Binding Total, StringFormat='₹ {0:F2}'}" Grid.Row="3" Grid.Column="1" FontSize="16" FontAttributes="Bold" TextColor="#E53935"/>
+            </Grid>
+
+            <!-- Checkout Button -->
+            <Button Text="Proceed to Checkout"
+                    Command="{Binding CheckoutCommand}"
+                    BackgroundColor="#FF9800"
+                    TextColor="White"
+                    FontSize="16"
+                    HeightRequest="50"
+                    CornerRadius="10"/>
+        </StackLayout>
+
+    </Grid>
+</ContentPage>

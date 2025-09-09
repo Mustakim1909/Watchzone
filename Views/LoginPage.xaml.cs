@@ -13,8 +13,31 @@ public partial class LoginPage : ContentPage
         LoadSavedCredentials();
         _woocommerceServices = woocommerceServices;
     }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
 
-        private void LoadSavedCredentials()
+        // Check if remember me is enabled
+        var rememberMe = Preferences.Get("RememberMe", false);
+        if (rememberMe)
+        {
+            var savedUsername = Preferences.Get("SavedUsername", string.Empty);
+            var savedPassword = Preferences.Get("SavedPassword", string.Empty);
+
+            if (!string.IsNullOrEmpty(savedUsername) && !string.IsNullOrEmpty(savedPassword))
+            {
+                UsernameEntry.Text = savedUsername;
+                PasswordEntry.Text = savedPassword;
+                RememberMeCheckBox.IsChecked = true;
+
+                // Auto-login
+                await Task.Delay(500); // Small delay for better UX
+                OnLoginClicked(this, EventArgs.Empty);
+            }
+        }
+    }
+
+    private void LoadSavedCredentials()
     {
         // Check if we have saved credentials
         if (Preferences.ContainsKey("RememberMe") && Preferences.Get("RememberMe", false))
@@ -97,16 +120,21 @@ public partial class LoginPage : ContentPage
             }
 
             // Call WooCommerce authentication service
-            bool isAuthenticated = await _woocommerceServices.AuthenticateUser(
+            var customer = await _woocommerceServices.AuthenticateUser(
                 UsernameEntry.Text.Trim(),
                 PasswordEntry.Text
             );
 
-            if (isAuthenticated)
+            if (customer != null)
             {
+                Preferences.Set("CustomerId", customer.Id);
+                Preferences.Set("CustomerName", customer.FirstName);
+                Preferences.Set("CustomerEmail", customer.Email);
                 // Navigate to the main application page
                 await DisplayAlert("Success", "You have successfully logged in!", "OK");
-                Application.Current.MainPage = new AppShell();
+                App.CurrentCustomerId = customer.Id;
+                await _woocommerceServices.GetCartAsync(customer.Id);
+                Application.Current.MainPage = new AppShell(_woocommerceServices);
             }
             else
             {
