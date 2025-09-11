@@ -280,11 +280,11 @@ namespace Watchzone.Services
             }
         }
 
-        public async Task<List<Order>> GetOrdersAsync(int customerId)
+        public async Task<List<Order>> GetCustomerOrdersAsync(int customerId)
         {
             try
             {
-                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/customers" +
+                var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/orders?" +
                          $"consumer_key={_appSettings.ConsumerKey}&" +
                          $"consumer_secret={_appSettings.ConsumerSecret}&" +
                          $"customer={customerId}";
@@ -296,14 +296,17 @@ namespace Watchzone.Services
                     var content = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<List<Order>>(content);
                 }
+
+                Debug.WriteLine($"API Error: {response.StatusCode}");
                 return new List<Order>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching orders: {ex.Message}");
+                Debug.WriteLine($"Error fetching orders: {ex.Message}");
                 return new List<Order>();
             }
         }
+
 
         public async Task<Customer> GetCustomerAsync(int customerId)
         {
@@ -686,18 +689,17 @@ namespace Watchzone.Services
             return null;
         }
 
-        public async Task<Order> CreateOrderAsync(int customerId, Address shippingAddress, Address billingAddress = null)
+        public async Task<Order> CreateOrderAsync(int customerId, Address shippingAddress)
         {
             try
             {
+                string platform = DeviceInfo.Platform.ToString().ToLower(); // returns "android", "ios", "winui", etc.
+
                 var cart = await GetCartAsync(customerId);
                 if (!cart.Any()) return null;
 
                 var customer = await GetCustomerAsync(customerId);
                 if (customer == null) return null;
-
-                // Use billing address from customer if not provided
-                billingAddress ??= customer.Billing;
 
                 var lineItems = cart.Select(item => new
                 {
@@ -709,10 +711,10 @@ namespace Watchzone.Services
                 // Build order data
                 dynamic orderData = new ExpandoObject();
                 orderData.customer_id = customerId;
-                orderData.status = "pending";
+                orderData.status = "processing";
                 orderData.line_items = lineItems;
 
-                // Add shipping address
+                // Shipping address
                 orderData.shipping = new
                 {
                     first_name = shippingAddress.FirstName,
@@ -725,19 +727,19 @@ namespace Watchzone.Services
                     country = shippingAddress.Country
                 };
 
-                // Add billing address
+                // Billing address = Same as shipping
                 orderData.billing = new
                 {
-                    first_name = billingAddress.FirstName,
-                    last_name = billingAddress.LastName,
-                    address_1 = billingAddress.Address1,
-                    address_2 = billingAddress.Address2,
-                    city = billingAddress.City,
-                    state = billingAddress.State,
-                    postcode = billingAddress.Postcode,
-                    country = billingAddress.Country,
-                    email = billingAddress.Email,
-                    phone = billingAddress.Phone
+                    first_name = shippingAddress.FirstName,
+                    last_name = shippingAddress.LastName,
+                    address_1 = shippingAddress.Address1,
+                    address_2 = shippingAddress.Address2,
+                    city = shippingAddress.City,
+                    state = shippingAddress.State,
+                    postcode = shippingAddress.Postcode,
+                    country = shippingAddress.Country,
+                    email = customer.Email,   // Customer email
+                    phone = shippingAddress.Phone // Use shipping phone
                 };
 
                 // Apply coupon if any
@@ -745,9 +747,13 @@ namespace Watchzone.Services
                 {
                     orderData.coupon_lines = new[]
                     {
-                    new { code = _appliedCoupons[customerId] }
-                };
+                new { code = _appliedCoupons[customerId] }
+            };
                 }
+                orderData.meta_data = new[]
+{
+    new { key = "origin", value = platform }
+};
 
                 var json = JsonConvert.SerializeObject(orderData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -780,6 +786,7 @@ namespace Watchzone.Services
                 return null;
             }
         }
+
 
         public async Task ClearCartAsync(int customerId)
         {
@@ -864,5 +871,54 @@ namespace Watchzone.Services
                 _sessionCarts[customerId] = new Dictionary<int, CartItem>();
             }
         }
+
+        public async Task<bool> AddReviewAsync(int productId, int customerId, int rating, string reviewText)
+        {
+            var reviewData = new
+            {
+                product_id = productId,
+                reviewer = App.CurrentCustomerName, 
+                reviewer_email = App.CurrentCustomerEmail,
+                review = reviewText,
+                rating = rating,
+                status = "approved",
+                customer_id = customerId
+            };
+
+            var json = JsonConvert.SerializeObject(reviewData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"{_appSettings.BaseUrl}wp-json/wc/v3/products/reviews", content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteReviewAsync(int reviewId)
+        {
+            var response = await _httpClient.DeleteAsync($"{_appSettings.BaseUrl}wp-json/wc/v3/products/reviews/{reviewId}?force=true");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(int id, string status)
+        {
+            try 
+            { 
+            var url = $"{_appSettings.BaseUrl}wp-json/wc/v3/orders/{id}";
+            var payload = new
+            {
+                status = status 
+            };
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync(url, content);
+
+            return response.IsSuccessStatusCode;
+        }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error updating order status: {ex.Message}");
+        return false;
+    }
+}
     }
 }

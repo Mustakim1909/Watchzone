@@ -7,25 +7,21 @@ using System.Threading.Tasks;
 
 namespace Watchzone.Converters
 {
-    public class RatingToStarsConverter : IValueConverter
+    public class ItemCountToHeightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            int rating = 0;
-            if (value != null)
-                rating = System.Convert.ToInt32(value);
-            var stars = new List<string>();
-            for (int i = 1; i <= 5; i++)
+            if (value is int count)
             {
-                if (i <= rating)
-                    stars.Add("star_filled.png"); // filled star
+                // Each item is approximately 80px tall, with a minimum height
+                return Math.Max(count * 80, 120);
             }
-            return stars;
+            return 120;
         }
 
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+        {
+            throw new NotImplementedException();
+        }
     }
 }
-

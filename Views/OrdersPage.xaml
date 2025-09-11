@@ -1,12 +1,249 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Watchzone.Views"
+             xmlns:viewModels="clr-namespace:Watchzone.ViewModels"
+             xmlns:converters="clr-namespace:Watchzone.Converters"
              x:Class="Watchzone.Views.OrdersPage"
-             Title="OrdersPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="My Orders"
+             BackgroundColor="#FAFAFA">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters -->
+            <converters:OrderStatusConverter x:Key="StatusConverter" />
+            <converters:OrderStatusColorConverter x:Key="StatusColorConverter" />
+
+            <!-- Colors -->
+            <Color x:Key="PrimaryColor">#1A73E8</Color>
+            <Color x:Key="SecondaryColor">#FF9900</Color>
+            <Color x:Key="TextPrimary">#202124</Color>
+            <Color x:Key="TextSecondary">#5F6368</Color>
+            <Color x:Key="DividerColor">#E8EAED</Color>
+            <Color x:Key="CardBackground">#FFFFFF</Color>
+            <Color x:Key="SuccessColor">#0F9D58</Color>
+            <Color x:Key="WarningColor">#F4B400</Color>
+            <Color x:Key="ErrorColor">#DB4437</Color>
+
+            <!-- Font Sizes -->
+            <x:Double x:Key="FontSizeLarge">18</x:Double>
+            <x:Double x:Key="FontSizeMedium">16</x:Double>
+            <x:Double x:Key="FontSizeSmall">14</x:Double>
+            <x:Double x:Key="FontSizeXSmall">12</x:Double>
+
+            <!-- Styles -->
+            <Style TargetType="Label" x:Key="Heading">
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style TargetType="Label" x:Key="Subheading">
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            </Style>
+
+            <Style TargetType="Label" x:Key="Body">
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            </Style>
+
+            <Style TargetType="Label" x:Key="Caption">
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeXSmall}" />
+            </Style>
+
+            <Style TargetType="Button" x:Key="PrimaryButton">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="HeightRequest" Value="36" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeXSmall}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Padding" Value="16,0" />
+            </Style>
+
+            <Style TargetType="Button" x:Key="SecondaryButton">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DividerColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="HeightRequest" Value="36" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeXSmall}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Padding" Value="16,0" />
+            </Style>
+
+            <Style TargetType="Frame" x:Key="Card">
+                <Setter Property="Padding" Value="16" />
+                <Setter Property="Margin" Value="16,8" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="BorderColor" Value="{StaticResource DividerColor}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <viewModels:OrdersViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <!-- Orders List -->
+        <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding LoadOrdersCommand}">
+            <CollectionView ItemsSource="{Binding Orders}"
+                            SelectionMode="None"
+                            EmptyView="{Binding}">
+
+                <CollectionView.Header>
+                    <StackLayout Padding="16,16,16,8">
+                        <Label Text="Order History" 
+                               Style="{StaticResource Heading}" />
+                        <Label Text="Review your past purchases and track current orders" 
+                               Style="{StaticResource Caption}"
+                               Margin="0,4,0,0" />
+                    </StackLayout>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Style="{StaticResource Card}">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                  RowSpacing="12">
+
+                                <!-- Order ID (Left) & Status (Right) -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <!-- Order ID (Left side) -->
+                                    <Label Grid.Column="0"
+           Text="{Binding Id, StringFormat='Order #{0}'}"
+           Style="{StaticResource Body}"
+           VerticalOptions="Center"/>
+
+                                    <!-- Status Badge (Right side) -->
+                                    <Frame Grid.Column="1"
+           Padding="8,4"
+           CornerRadius="12"
+           HasShadow="False"
+           BackgroundColor="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+           VerticalOptions="Center">
+                                        <Label Text="{Binding Status, Converter={StaticResource StatusConverter}}"
+               FontSize="15"
+               TextColor="White"
+               HorizontalOptions="Center"/>
+                                    </Frame>
+                                </Grid>
+
+
+                                <!-- Divider -->
+                                <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="{StaticResource DividerColor}" />
+
+                                <!-- Order Date & Amount -->
+                                <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+                                    <StackLayout Spacing="2">
+                                        <Label Text="Order Date" 
+                                               Style="{StaticResource Caption}" />
+                                        <Label Text="{Binding DateCreated, StringFormat='{0:dd MMM yyyy}'}"
+                                               Style="{StaticResource Body}" />
+                                    </StackLayout>
+                                    <StackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End">
+                                        <Label Text="Total Amount" 
+                                               Style="{StaticResource Caption}" 
+                                               HorizontalOptions="End"/>
+                                        <Label Text="{Binding Total, StringFormat='₹{0}'}"
+                                               Style="{StaticResource Body}" 
+                                               HorizontalOptions="End"/>
+                                    </StackLayout>
+                                </Grid>
+
+                                <!-- Product Details -->
+                                <Grid Grid.Row="3">
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Frame Padding="0"
+                                               WidthRequest="60"
+                                               HeightRequest="60"
+                                               CornerRadius="6"
+                                               HasShadow="False"
+                                               BorderColor="{StaticResource DividerColor}"
+                                               BackgroundColor="#F9F9F9"
+                                               VerticalOptions="Center">
+                                            <Image Source="{Binding LineItems[0].Images.Src, TargetNullValue='product_placeholder.png'}"
+                                                   Aspect="AspectFill"
+                                                   HeightRequest="60"
+                                                   WidthRequest="60"/>
+                                        </Frame>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{Binding LineItems[0].Name}"
+                                                   FontSize="{StaticResource FontSizeSmall}"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource TextPrimary}"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"/>
+                                            <Label Text="{Binding LineItems.Count, StringFormat='{0} items'}"
+                                                   Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Grid>
+
+                                <!-- Action Buttons -->
+                                <!--<Grid Grid.Row="4">
+                                    <HorizontalStackLayout Spacing="8"
+                                                           HorizontalOptions="End">
+                                        <Button Text="View Details"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:OrdersPage}}, Path=BindingContext.ViewDetailsCommand}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Text="Buy Again"
+                                                Style="{StaticResource PrimaryButton}"
+                                                BackgroundColor="{StaticResource SecondaryColor}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:OrdersPage}}, Path=BindingContext.BuyAgainCommand}"
+                                                CommandParameter="{Binding}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>-->
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Empty View -->
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="CenterAndExpand"
+                                 HorizontalOptions="CenterAndExpand"
+                                 Padding="40"
+                                 Spacing="24">
+                        <Image Source="empty_orders.png"
+                               HeightRequest="150"
+                               HorizontalOptions="Center"
+                               Aspect="AspectFit"/>
+                        <StackLayout Spacing="8">
+                            <Label Text="No Orders Yet"
+                                   Style="{StaticResource Heading}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Start shopping and your orders will show up here"
+                                   Style="{StaticResource Subheading}"
+                                   HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                        <Button Text="Start Shopping"
+                                Style="{StaticResource PrimaryButton}"
+                                BackgroundColor="{StaticResource SecondaryColor}"
+                                HeightRequest="44"
+                                FontSize="{StaticResource FontSizeSmall}"
+                                Command="{Binding ContinueShoppingCommand}"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           Color="{StaticResource PrimaryColor}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           BackgroundColor="#CCFFFFFF"
+                           HeightRequest="60"
+                           WidthRequest="60"/>
+    </Grid>
 </ContentPage>

@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Watchzone.Interfaces;
 using Watchzone.Models;
+using Watchzone.Views;
 
 namespace Watchzone.ViewModels
 {
@@ -218,7 +219,7 @@ namespace Watchzone.ViewModels
 
         private async Task Checkout()
         {
-            await Shell.Current.GoToAsync("//CheckoutPage");
+            await Shell.Current.Navigation.PushModalAsync(new CheckoutPage(_wooCommerceService));
         }
 
         private async Task IncreaseQuantity(CartItem item)

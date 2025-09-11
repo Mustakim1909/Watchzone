@@ -17,6 +17,7 @@ namespace Watchzone.ViewModels
         private Product _product;
         private int _quantity = 1;
         private List<Review> _reviews;
+        private int _selectedRating = 0;
         private readonly IWoocommerceServices _wooCommerceService;
 
         public Product Product
@@ -48,16 +49,58 @@ namespace Watchzone.ViewModels
                 OnPropertyChanged();
             }
         }
+        // ⭐ Selected Rating
+        public int SelectedRating
+        {
+            get => _selectedRating;
+            set
+            {
+                _selectedRating = value;
+                OnPropertyChanged();
+            }
+        }
 
+        // ⭐ Command to set rating
+        public ICommand SetRatingCommand { get; }
         public ICommand AddToCartCommand { get; }
         public ICommand BuyNowCommand { get; }
+        public ICommand DeleteReviewCommand { get; } 
 
         public ProductViewModel(IWoocommerceServices woocommerceServices, int productId)
         {
             _wooCommerceService = woocommerceServices;
             AddToCartCommand = new Command(AddToCart);
             BuyNowCommand = new Command(BuyNow);
+            SetRatingCommand = new Command<string>(ratingParam =>
+            {
+                if (int.TryParse(ratingParam, out int rating))
+                {
+                    SelectedRating = rating;
+                }
+            });
 
+            DeleteReviewCommand = new Command<Review>(async review =>
+            {
+                if (review.Reviewer != App.CurrentCustomerName)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "You cannot delete this review.", "OK");
+                    return;
+                }
+
+                bool confirm = await Application.Current.MainPage.DisplayAlert("Delete Review", "Are you sure you want to delete this review?", "Yes", "No");
+                if (!confirm) return;
+
+                var success = await _wooCommerceService.DeleteReviewAsync(review.Id);
+                if (success)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Deleted", "Your review has been deleted.", "OK");
+                    LoadReviews(productId);
+                 }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete review.", "OK");
+                }
+            });
             LoadProduct(productId);
             LoadReviews(productId);
         }
@@ -86,6 +129,7 @@ namespace Watchzone.ViewModels
             // Buy now logic
            // CartService.AddItem(Product, Quantity);
             await Shell.Current.GoToAsync("//cart");
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

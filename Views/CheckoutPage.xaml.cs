@@ -12,6 +12,7 @@ namespace Watchzone.Views
             InitializeComponent();
             _wooCommerceService = wooCommerceService;
             BindingContext = new CheckoutViewModel(_wooCommerceService);
+          
         }
 
         protected override async void OnAppearing()
@@ -22,6 +23,32 @@ namespace Watchzone.Views
             {
                 // Load customer + cart data when page appears
                 await viewModel.LoadData();
+            }
+        }
+        private void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            var vm = BindingContext as ViewModels.CheckoutViewModel;
+            if (vm == null) return;
+
+            if (e.Value) // Checked
+            {
+                vm.SaveShippingAddress = true;
+                vm.SaveAddressToPreferences(); // Save immediately
+            }
+            else // Unchecked
+            {
+                vm.SaveShippingAddress = false;
+
+                // Optional: Clear saved address
+                Preferences.Remove("SavedFirstName");
+                Preferences.Remove("SavedLastName");
+                Preferences.Remove("SavedPhone");
+                Preferences.Remove("SavedAddress1");
+                Preferences.Remove("SavedAddress2");
+                Preferences.Remove("SavedCity");
+                Preferences.Remove("SavedState");
+                Preferences.Remove("SavedPostcode");
+                Preferences.Remove("SavedCountry");
             }
         }
     }
