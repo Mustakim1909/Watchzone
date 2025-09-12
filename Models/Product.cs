@@ -41,7 +41,13 @@ namespace Watchzone.Models
 
         [JsonProperty("on_sale")]
         public bool OnSale { get; set; }
-            
+        [JsonProperty("stock_quantity")]
+        public int? StockQuantity { get; set; }
+        [JsonProperty("in_stock")]
+        public bool InStock { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
     }
     public class Image
     {

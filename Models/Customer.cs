@@ -23,5 +23,11 @@ namespace Watchzone.Models
 
         [JsonProperty("username")]
         public string Username { get; set; }
+        [JsonProperty("billing")]
+        public Address Billing { get; set; }
+
+        [JsonProperty("shipping")]
+        public Address Shipping { get; set; }
+
     }
 }
